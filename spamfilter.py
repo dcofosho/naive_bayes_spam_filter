@@ -1,7 +1,11 @@
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
 count_vector = CountVectorizer()
+naive_bayes = MultinomialNB()
 
 #Read labeled sms data with pandas as table with columns label and sms message
 df = pd.read_table('SMSSpamCollection',
@@ -41,3 +45,18 @@ print('Total num rows:\n {}'.format(df.shape[0]))
 print('Num rows in training set \n {}'.format(X_train.shape[0]))
 print('Num rows in testing set \n {}'.format(X_test.shape[0]))
 
+#fit training data to countvector and store as matrix
+training_data = count_vector.fit_transform(X_train)
+#store testing data as matrix without fitting to countvector
+testing_data = count_vector.transform(X_test)
+
+#train naive bayes classifier with the training data
+naive_bayes.fit(training_data, y_train)
+#test classifier
+predictions = naive_bayes.predict(testing_data)
+
+#Output metrics
+print('Accuracy:\n'+format(accuracy_score(y_test, predictions)))
+print('Precision:\n'+format(precision_score(y_test, predictions)))
+print('Recall:\n'+format(recall_score(y_test, predictions)))
+print('f1 score:\n'+format(f1_score(y_test, predictions)))
